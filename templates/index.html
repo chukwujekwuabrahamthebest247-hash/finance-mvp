@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>Finance MVP</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Total Expenses: ${{ total_expense }}</p>
-    <h2>Expenses by Category</h2>
-    <ul>
-    {% for cat, amt in by_category.items() %}
-        <li>{{ cat }}: ${{ amt }}</li>
-    {% endfor %}
-    </ul>
+    <h1>AI Receipt Scanner</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload Receipt</button>
+    </form>
 
-    <h2>All Entries</h2>
-    <table border="1">
-        <tr><th>Vendor</th><th>Amount</th><th>Category</th><th>Date</th></tr>
-        {% for r in entries %}
-        <tr>
-            <td>{{ r.vendor }}</td>
-            <td>{{ r.amount }}</td>
-            <td>{{ r.category }}</td>
-            <td>{{ r.date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <a href="/">Home</a>
+    <h2>Import Bank CSV</h2>
+    <form action="/import_csv" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Import CSV</button>
+    </form>
+
+    <h2>Dashboard & Export</h2>
+    <a href="/dashboard">View Dashboard</a> |
+    <a href="/export">Export CSV</a>
 </body>
 </html>
