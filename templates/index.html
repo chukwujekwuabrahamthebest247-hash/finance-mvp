@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>Total Expenses: ${{ total_expense }}</p>
+    <h2>Expenses by Category</h2>
+    <ul>
+    {% for cat, amt in by_category.items() %}
+        <li>{{ cat }}: ${{ amt }}</li>
+    {% endfor %}
+    </ul>
+
+    <h2>All Entries</h2>
+    <table border="1">
+        <tr><th>Vendor</th><th>Amount</th><th>Category</th><th>Date</th></tr>
+        {% for r in entries %}
+        <tr>
+            <td>{{ r.vendor }}</td>
+            <td>{{ r.amount }}</td>
+            <td>{{ r.category }}</td>
+            <td>{{ r.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="/">Home</a>
+</body>
+</html>
