@@ -21,6 +21,60 @@ def categorize_expense(text):
     else:
         return "Other"
 
+import re
+
+def extract_amount(text):
+    text_lower = text.lower()
+
+    patterns = [
+        r"total[:\s]*\$?([\d.,]+)",
+        r"amount[:\s]*\$?([\d.,]+)",
+        r"balance[:\s]*\$?([\d.,]+)",
+        r"grand total[:\s]*\$?([\d.,]+)"
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text_lower)
+        if match:
+            try:
+                return float(match.group(1).replace(",", ""))
+            except:
+                pass
+
+    numbers = []
+    for word in text.replace("\n"," ").split(" "):
+        word_clean = word.replace("$","").replace(",","")
+        try:
+            numbers.append(float(word_clean))
+        except:
+            continue
+
+    return max(numbers) if numbers else 0.0
+
+
+def extract_date(text):
+    patterns = [
+        r"(\d{4}-\d{2}-\d{2})",
+        r"(\d{2}/\d{2}/\d{4})",
+        r"(\d{2}-\d{2}-\d{4})"
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            try:
+                return datetime.strptime(match.group(1), "%Y-%m-%d").date()
+            except:
+                try:
+                    return datetime.strptime(match.group(1), "%m/%d/%Y").date()
+                except:
+                    try:
+                        return datetime.strptime(match.group(1), "%m-%d-%Y").date()
+                    except:
+                        continue
+
+    return datetime.today().date()
+
 # Setup FastAPI
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
