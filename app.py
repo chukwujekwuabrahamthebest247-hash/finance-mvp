@@ -107,32 +107,39 @@ async def home(request: Request):
 async def upload_receipt(file: UploadFile = File(...)):
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
+
     text = pytesseract.image_to_string(image)
-    category = categorize_expense(text)
-    
-    # For MVP: try to extract vendor & amount simply
-    vendor = text.split("\n")[0][:30]  # first line
-    amount = 0.0
-    for word in text.split():
-        try:
-            amount = float(word.replace("$","").replace(",",""))
+
+    vendor = "Unknown Vendor"
+    for line in text.split("\n"):
+        if line.strip():
+            vendor = line.strip()[:30]
             break
-        except:
-            continue
-    
-    # Save to DB
+
+    amount = extract_amount(text)
+    date_found = extract_date(text)
+    category = categorize_expense(text)
+
     db = SessionLocal()
-    db.add_all([receipts.insert().values(
-        vendor=vendor,
-        amount=amount,
-        category=category,
-        date=datetime.today(),
-        raw_text=text
-    )])
+    db.execute(
+        receipts.insert().values(
+            vendor=vendor,
+            amount=amount,
+            category=category,
+            date=date_found,
+            raw_text=text
+        )
+    )
     db.commit()
     db.close()
-    
-    return {"text": text, "category": category, "vendor": vendor, "amount": amount}
+
+    return {
+        "vendor": vendor,
+        "amount": amount,
+        "category": category,
+        "date": str(date_found),
+        "raw_text": text
+    }
 
 # Dashboard
 @app.get("/dashboard", response_class=HTMLResponse)
