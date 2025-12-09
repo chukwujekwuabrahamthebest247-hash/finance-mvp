@@ -222,6 +222,15 @@ receipts = Table(
 
 metadata.create_all(engine)
 SessionLocal = sessionmaker(bind=engine)
+# Dependency to get a DB session
+from sqlalchemy.orm import Session
+
+def get_db():
+    db = SessionLocal()  # create a session
+    try:
+        yield db          # provide it to the route
+    finally:
+        db.close()        # always close after the route finishes
 
 # Home page
 @app.get("/", response_class=HTMLResponse)
