@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, UploadFile, File, Form
+from fastapi import FastAPI, Request, UploadFile, File, Form, Depends
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -230,7 +230,10 @@ async def home(request: Request):
 
 # Upload receipt
 @app.post("/upload")
-async def upload_receipt(file: UploadFile = File(...)):
+async def upload_receipt(
+    file: UploadFile = File(...),
+    current_user = Depends(get_current_user)  # <-- add this
+):
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
 
@@ -249,11 +252,13 @@ async def upload_receipt(file: UploadFile = File(...)):
     db = SessionLocal()
     db.execute(
         receipts.insert().values(
+            user_id=current_user.id,  # <-- attach the logged-in user
             vendor=vendor,
             amount=amount,
             category=category,
             date=date_found,
-            raw_text=text
+            raw_text=text,
+            image_url=None
         )
     )
     db.commit()
