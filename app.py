@@ -31,15 +31,15 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_MINUTES = 60
 
 def hash_password(password: str):
-return pwd_context.hash(password)
+    return pwd_context.hash(password)
 
 def verify_password(password: str, hashed: str):
-return pwd_context.verify(password, hashed)
+    return pwd_context.verify(password, hashed)
 
 def create_access_token(data: dict):
-to_encode = data.copy()
-to_encode.update({"exp": time.time() + JWT_EXPIRE_MINUTES * 60})
-return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    to_encode = data.copy()
+    to_encode.update({"exp": time.time() + JWT_EXPIRE_MINUTES * 60})
+    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 # --- Authentication Helper Functions ---
 from passlib.context import CryptContext
 from jose import jwt
