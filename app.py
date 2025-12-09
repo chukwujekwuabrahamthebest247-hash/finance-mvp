@@ -49,6 +49,33 @@ def create_access_token(data: dict, expires_delta: int = JWT_EXPIRE_MINUTES) -> 
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return token
+# ----------------- AUTH ROUTES -----------------
+from fastapi import HTTPException, status
+
+@app.post("/auth/register", response_model=Token)
+def register(user: UserCreate):
+    db = SessionLocal()
+    existing = db.execute(users.select().where(users.c.email == user.email)).first()
+    if existing:
+        db.close()
+        raise HTTPException(status_code=400, detail="Email already registered")
+    ph = hash_password(user.password)
+    db.execute(users.insert().values(email=user.email, password_hash=ph))
+    db.commit()
+    user_row = db.execute(users.select().where(users.c.email == user.email)).first()
+    db.close()
+    token = create_access_token({"sub": user_row.id})
+    return {"access_token": token, "token_type": "bearer"}
+
+@app.post("/auth/login", response_model=Token)
+def login(user: UserCreate):
+    db = SessionLocal()
+    row = db.execute(users.select().where(users.c.email == user.email)).first()
+    db.close()
+    if not row or not verify_password(user.password, row.password_hash):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    token = create_access_token({"sub": row.id})
+    return {"access_token": token, "token_type": "bearer"}
 # AI simulation function (replace with OpenAI call)
 def categorize_expense(text):
     text = text.lower()
