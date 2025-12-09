@@ -5,3 +5,9 @@ SQLAlchemy==2.0.28
 pillow==10.1.0
 pytesseract==0.3.10
 python-multipart==0.0.6
+# Add these new packages
+passlib[bcrypt]==1.7.5
+python-jose==3.3.0
+pyjwt==2.8.0
+stripe==6.0.0
+python-dotenv==1.0.0
