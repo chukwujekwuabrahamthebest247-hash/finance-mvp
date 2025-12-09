@@ -85,15 +85,35 @@ DB_PATH = "data/receipts.db"
 os.makedirs("data", exist_ok=True)
 engine = create_engine(f"sqlite:///{DB_PATH}")
 metadata = MetaData()
+# Setup SQLite DB
+DB_PATH = "data/receipts.db"
+os.makedirs("data", exist_ok=True)
+engine = create_engine(f"sqlite:///{DB_PATH}")
+metadata = MetaData()
+
+# Users table
+users = Table(
+    "users", metadata,
+    Column("id", Integer, primary_key=True),
+    Column("email", String, unique=True, nullable=False),
+    Column("password_hash", String, nullable=False),
+    Column("is_paid", Integer, default=0),            # 0 = free, 1 = paid
+    Column("subscription_expires", Date, nullable=True)
+)
+
+# Receipts table with user_id and optional image_url
 receipts = Table(
     "receipts", metadata,
     Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, nullable=True),
     Column("vendor", String),
     Column("amount", Float),
     Column("category", String),
     Column("date", Date),
-    Column("raw_text", String)
+    Column("raw_text", String),
+    Column("image_url", String, nullable=True)
 )
+
 metadata.create_all(engine)
 SessionLocal = sessionmaker(bind=engine)
 
