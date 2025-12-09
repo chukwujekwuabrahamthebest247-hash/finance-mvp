@@ -2,31 +2,135 @@
 <html>
 <head>
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <h1>Dashboard</h1>
-    <p>Total Expenses: ${{ total_expense }}</p>
-    <h2>Expenses by Category</h2>
-    <ul>
-    {% for cat, amt in by_category.items() %}
-        <li>{{ cat }}: ${{ amt }}</li>
-    {% endfor %}
-    </ul>
 
-    <h2>All Entries</h2>
-    <table border="1">
-        <tr><th>Vendor</th><th>Amount</th><th>Category</th><th>Date</th></tr>
-        {% for r in entries %}
-        <tr>
-            <td>{{ r.vendor }}</td>
-            <td>{{ r.amount }}</td>
-            <td>{{ r.category }}</td>
-            <td>{{ r.date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <a href="/">Home</a>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f5f7fa; }
+        .card { border-radius: 12px; }
+    </style>
+</head>
+
+<body>
+<div class="container mt-4">
+
+    <h1 class="mb-4 text-center">Expense Dashboard</h1>
+
+    <!-- TOP STAT CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Total Expenses</h5>
+                <h3>${{ total_expense }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Total Entries</h5>
+                <h3>{{ entries|length }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/" class="btn btn-primary w-100" style="height:100%;">Upload More</a>
+        </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="card mb-4 p-3">
+        <h4>Expenses by Category</h4>
+        <ul class="list-group mt-3">
+            {% for cat, amt in by_category.items() %}
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>{{ cat }}</strong>
+                <span>${{ amt }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="card mb-3 p-3">
+        <h4>Search & Filter</h4>
+
+        <div class="row g-3 mt-2">
+            <div class="col-md-6">
+                <input id="searchBox" type="text" class="form-control" placeholder="Search vendor or category...">
+            </div>
+
+            <div class="col-md-4">
+                <select id="categoryFilter" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for cat, amt in by_category.items() %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENTRIES TABLE -->
+    <div class="card p-3">
+        <h4 class="mb-3">All Expenses</h4>
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="expenseTable">
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for r in entries %}
+                    <tr>
+                        <td>{{ r.vendor }}</td>
+                        <td>${{ r.amount }}</td>
+                        <td>{{ r.category }}</td>
+                        <td>{{ r.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const searchBox = document.getElementById("searchBox");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const table = document.getElementById("expenseTable").getElementsByTagName("tbody")[0];
+
+    searchBox.addEventListener("keyup", filterTable);
+    categoryFilter.addEventListener("change", filterTable);
+
+    function filterTable() {
+        const searchText = searchBox.value.toLowerCase();
+        const selectedCat = categoryFilter.value;
+
+        for (let row of table.rows) {
+            const vendor = row.cells[0].innerText.toLowerCase();
+            const amount = row.cells[1].innerText.toLowerCase();
+            const category = row.cells[2].innerText.toLowerCase();
+
+            const matchesSearch =
+                vendor.includes(searchText) ||
+                amount.includes(searchText) ||
+                category.includes(searchText);
+
+            const matchesCategory =
+                selectedCat === "" || category === selectedCat.toLowerCase();
+
+            row.style.display = matchesSearch && matchesCategory ? "" : "none";
+        }
+    }
+</script>
+
 </body>
 </html>
