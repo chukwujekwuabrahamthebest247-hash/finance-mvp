@@ -10,6 +10,17 @@ import pytesseract
 import io
 import csv
 import os
+# Pydantic models for authentication
+
+from pydantic import BaseModel
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 # AI simulation function (replace with OpenAI call)
 def categorize_expense(text):
