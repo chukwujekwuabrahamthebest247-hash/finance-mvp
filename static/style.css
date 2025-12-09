@@ -17,3 +17,64 @@ th, td {
     border: 1px solid #aaa;
     padding: 8px;
 }
+
+/* === UI IMPROVEMENTS ADDED === */
+
+/* Modern font */
+body {
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Better card UI */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+/* Better buttons */
+button {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background-color: #357ABD;
+}
+
+/* Improved table style */
+table {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #f4f4f4;
+    font-weight: 600;
+}
+
+td, th {
+    border: none;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+    }
+
+    td {
+        border: none;
+        padding: 10px 0;
+    }
+}
