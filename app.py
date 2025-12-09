@@ -283,22 +283,13 @@ async def upload_receipt(
 
 # Dashboard
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request):
-    db = SessionLocal()
-    result = db.execute(receipts.select()).fetchall()
-    db.close()
-    
-    total_expense = sum(r.amount for r in result)
-    by_category = {}
-    for r in result:
-        by_category[r.category] = by_category.get(r.category, 0) + r.amount
-    
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
-        "total_expense": total_expense,
-        "by_category": by_category,
-        "entries": result
-    })
+async def dashboard(
+    request: Request, 
+    current_user = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    rows = db.execute(receipts.select().where(receipts.c.user_id==current_user.id)).fetchall()
+    return templates.TemplateResponse("dashboard.html", {"request": request, "entries": rows})
 
 # Bank CSV import
 @app.post("/import_csv")
