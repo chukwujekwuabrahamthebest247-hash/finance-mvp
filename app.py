@@ -85,7 +85,29 @@ def register(user: UserCreate):
     db.close()
     token = create_access_token({"sub": user_row.id})
     return {"access_token": token, "token_type": "bearer"}
+# ------------------- AUTH MIDDLEWARE -------------------
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    from jose import jwt
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+
+    user_id = payload.get("sub")
+    
+    db = SessionLocal()
+    user = db.execute(users.select().where(users.c.id == user_id)).first()
+    db.close()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    return user
 @app.post("/auth/login", response_model=Token)
 def login(user: UserCreate):
     db = SessionLocal()
