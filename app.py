@@ -10,6 +10,9 @@ import pytesseract
 import io
 import csv
 import os
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # Pydantic models for authentication
 
 from pydantic import BaseModel
