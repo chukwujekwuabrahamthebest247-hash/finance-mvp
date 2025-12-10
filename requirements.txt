@@ -6,7 +6,7 @@ pillow==10.1.0
 pytesseract==0.3.10
 python-multipart==0.0.6
 # Add these new packages
-passlib[bcrypt]>=1.6.1
+passlib[bcrypt]==1.7.4
 python-jose==3.3.0
 pyjwt==2.8.0
 stripe==6.0.0
