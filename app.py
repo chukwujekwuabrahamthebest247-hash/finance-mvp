@@ -21,8 +21,6 @@ class UserCreate(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
-# Create FastAPI app
-app = FastAPI()
 # --- Authentication Helper Functions ---
 from passlib.context import CryptContext
 from jose import jwt
